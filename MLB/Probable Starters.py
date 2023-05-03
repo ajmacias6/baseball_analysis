@@ -25,12 +25,20 @@ for game in game_summaries:
     team2 = team_tags[1].text.strip()
     
     starter_tags = game.find_all('table')[1].find_all('a')
-    starter1 = starter_tags[0].text.strip()
-    starter2 = starter_tags[1].text.strip()
+    starter1_tag = starter_tags[0]
+    starter2_tag = starter_tags[1]
     
-    starter_id_tags = game.find_all('table')[1].find_all('a')
-    starter_id1 = starter_id_tags[0]['href'].split('/')[-1].split('.')[0]
-    starter_id2 = starter_id_tags[1]['href'].split('/')[-1].split('.')[0]
+    starter1 = starter1_tag.text.strip()
+    starter2 = starter2_tag.text.strip()
+    
+    if starter1_tag.find_next_sibling().text.strip() == "MLB Debut":
+        starter1 = starter1 + " (MLB Debut)"
+        
+    if starter2_tag.find_next_sibling().text.strip() == "MLB Debut":
+        starter2 = starter2 + " (MLB Debut)"
+    
+    starter_id1 = starter1_tag['href'].split('/')[-1].split('.')[0]
+    starter_id2 = starter2_tag['href'].split('/')[-1].split('.')[0]
     
     teams.extend([team1, team2])
     starters.extend([starter1, starter2])
@@ -42,3 +50,6 @@ probable_starter_df = pd.DataFrame({
     'Starter': starters,
     'Starter_ID': starter_ids
 })
+
+# Write dataframe to csv file
+probable_starter_df.to_csv('Probable Starters.csv', index=False)
